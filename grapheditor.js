@@ -32,7 +32,7 @@ function outputPosition(node, outputNumber) {
   var top = r.y-r.h/2;
   var y = evenlyDistribute(top, r.w, outputNumber, numberOfOutputs);
 
-  return({x: x, y: y});
+  return({ x: x, y: y });
 }
 
 function inputPosition(node, inputNumber) {
@@ -42,17 +42,17 @@ function inputPosition(node, inputNumber) {
   var top = r.y-r.h/2;
   var y = evenlyDistribute(top, r.w, inputNumber, numberOfInputs);
 
-  return({x: x, y: y});
+  return({ x: x, y: y });
 }
 
 function drawOutput(node, outputNumber) {
   var pos = outputPosition(node, outputNumber);
-  drawRect({x: pos.x, y: pos.y, w: 10, h: 10});
+  drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
 }
 
 function drawInput(node, inputNumber) {
   var pos = inputPosition(node, inputNumber);
-  drawRect({x: pos.x, y: pos.y, w: 10, h: 10});
+  drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
 }
 
 function drawConnection(fromNode, outputNumber, connectedTo) {
@@ -79,6 +79,8 @@ function drawConnection(fromNode, outputNumber, connectedTo) {
 }
 
 function drawNode(node) {
+  var i;
+
   drawRect(node.rect);
 
   for (i = 0; i < node.outputs.length; i++) {
@@ -108,9 +110,24 @@ function update(nodes) {
     drawNode(o);
   }
 
-  // TODO(lito): A demo note
+  // TODO(lito): remove
   globalCtx.font = "12px Arial";
   globalCtx.fillText("Try dragging the boxes!", 135, 300);
+}
+
+function raycastFindNode(nodes) {
+  // `find` just gets the first in the array. A more sophisticated impl
+  // would have a depth ordering to pick the topmost.
+  var found = nodes.find(function(node) {
+    var rect = node.rect;
+    return (
+      globalMousePos.x > rect.x - rect.w/2 &&
+      globalMousePos.x < rect.x + rect.w/2 &&
+      globalMousePos.y > rect.y - rect.h/2 &&
+      globalMousePos.y < rect.y + rect.h/2
+    );
+  });
+  return found;
 }
 
 function onMouseDown() {
@@ -126,21 +143,6 @@ function dragNode(node) {
   // rather than snapping the center of the rect to the mouse
   node.rect.x = globalMousePos.x;
   node.rect.y = globalMousePos.y;
-}
-
-function raycastFindNode(nodes) {
-  // `find` just gets the first in the array. A more sophisticated impl
-  // would have a depth ordering to pick the topmost.
-  var found = nodes.find(function(node) {
-    rect = node.rect;
-    return (
-      globalMousePos.x > rect.x - rect.w/2 &&
-      globalMousePos.x < rect.x + rect.w/2 &&
-      globalMousePos.y > rect.y - rect.h/2 &&
-      globalMousePos.y < rect.y + rect.h/2
-    );
-  });
-  return found;
 }
 
 function main() {
@@ -227,7 +229,7 @@ function main() {
 
   globalDragged = undefined;
 
-  canvas.addEventListener('mousemove', function(e) {
+  canvas.addEventListener("mousemove", function(e) {
     globalMousePos = getMousePos(canvas, e);
     if (globalDragged !== undefined) {
       dragNode(globalDragged);
@@ -235,8 +237,8 @@ function main() {
     update(globalNodes);
   }, false);
 
-  canvas.addEventListener('mousedown', onMouseDown, false);
-  canvas.addEventListener('mouseup', onMouseUp, false);
+  canvas.addEventListener("mousedown", onMouseDown, false);
+  canvas.addEventListener("mouseup", onMouseUp, false);
 }
 
 main();
