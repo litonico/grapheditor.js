@@ -47,7 +47,13 @@ function inputPosition(node, inputNumber) {
 
 function drawOutput(node, outputNumber) {
   var pos = outputPosition(node, outputNumber);
+  var name = node.outputs[outputNumber].name; // TODO(lito)
+
   drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
+
+  globalCtx.font = "12px Monaco";
+  var letterWidth = 7.25;
+  globalCtx.fillText(name, pos.x-letterWidth*(name.length+1), pos.y+5);
 }
 
 function drawInput(node, inputNumber) {
@@ -167,7 +173,7 @@ function main() {
 
 
   var output0 = {
-    name: "I am an output",
+    name: "I am a long output",
     connectedTo: {
       nodeIndex: 1,
       inputNumber: 0
@@ -175,7 +181,7 @@ function main() {
   };
 
   var output1 = {
-    name: "I am an output",
+    name: "output",
     connectedTo: {
       nodeIndex: 2,
       inputNumber: 0
@@ -183,19 +189,18 @@ function main() {
   };
 
   var output2 = {
-    name: "I am an output",
+    name: "output",
     connectedTo: {
       nodeIndex: 1,
       inputNumber: 1
     },
   };
 
-
   var node0 = {
     rect: {
       y: 75,
       x: 75,
-      w: 50,
+      w: 80,
       h: 50,
     },
     inputs: [],
@@ -206,8 +211,8 @@ function main() {
     rect: {
       y: 100,
       x: 300,
-      w: 50,
-      h: 50,
+      w: 80,
+      h: 100,
     },
     inputs: [input1, input2],
     outputs: [],
