@@ -30,7 +30,7 @@ function outputPosition(node, outputNumber) {
   var r = node.rect;
   var x = r.x + r.w/2; // Right side
   var top = r.y-r.h/2;
-  var y = evenlyDistribute(top, r.w, outputNumber, numberOfOutputs);
+  var y = evenlyDistribute(top, r.h, outputNumber, numberOfOutputs);
 
   return({ x: x, y: y });
 }
@@ -40,7 +40,7 @@ function inputPosition(node, inputNumber) {
   var r = node.rect;
   var x = r.x - r.w/2; // Left side
   var top = r.y-r.h/2;
-  var y = evenlyDistribute(top, r.w, inputNumber, numberOfInputs);
+  var y = evenlyDistribute(top, r.h, inputNumber, numberOfInputs);
 
   return({ x: x, y: y });
 }
