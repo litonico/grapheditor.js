@@ -1,4 +1,5 @@
 var globalDragged,
+    globalDragOffset,
     globalMousePos,
     globalNodes,
     globalHeight,
@@ -138,17 +139,22 @@ function raycastFindNode(nodes) {
 
 function onMouseDown() {
   globalDragged = raycastFindNode(globalNodes);
+
+  if (globalDragged) {
+    globalDragOffset = {
+      x: globalMousePos.x - globalDragged.rect.x,
+      y: globalMousePos.y - globalDragged.rect.y,
+    };
+  }
 }
 
 function onMouseUp() {
   globalDragged = undefined;
 }
 
-function dragNode(node) {
-  // A real impl would drag the rectangle along with the mouse,
-  // rather than snapping the center of the rect to the mouse
-  node.rect.x = globalMousePos.x;
-  node.rect.y = globalMousePos.y;
+function dragNode(node, dragOffset) {
+  node.rect.x = globalMousePos.x - dragOffset.x;
+  node.rect.y = globalMousePos.y - dragOffset.y;
 }
 
 function main() {
@@ -237,7 +243,7 @@ function main() {
   canvas.addEventListener("mousemove", function(e) {
     globalMousePos = getMousePos(canvas, e);
     if (globalDragged !== undefined) {
-      dragNode(globalDragged);
+      dragNode(globalDragged, globalDragOffset);
     }
     update(globalNodes);
   }, false);
