@@ -6,6 +6,9 @@ var globalDragged,
     globalWidth,
     globalCtx;
 
+var constFont = "12px Menlo";
+var constLetterWidth = 7.24; // TODO: find an exact value
+
 function getMousePos(canvas, e) {
   var rect = canvas.getBoundingClientRect();
   return {
@@ -26,7 +29,7 @@ function positiveMaximum(arr) {
 }
 
 function nodeWidth(node) {
-  var padding = 10;
+  var padding = 30;
 
   var inputLengths = node.inputs.map(function(input) {
     if (!input.name) {
@@ -48,8 +51,8 @@ function nodeWidth(node) {
 
   var outputMaxLength = positiveMaximum(outputLengths);
 
-  var inputWidth = inputMaxLength * 7.4;
-  var outputWidth = outputMaxLength * 7.4;
+  var inputWidth = inputMaxLength * constLetterWidth;
+  var outputWidth = outputMaxLength * constLetterWidth;
 
   return inputWidth + padding + outputWidth;
 }
@@ -96,14 +99,20 @@ function drawOutput(node, outputNumber) {
 
   drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
 
-  globalCtx.font = "12px Menlo";
-  var letterWidth = 7.24; // TODO: find an exact value
-  globalCtx.fillText(name, pos.x-letterWidth*(name.length+1), pos.y+5);
+  globalCtx.font = constFont;
+  var textXOffset = pos.x - constLetterWidth*(name.length+1);
+  globalCtx.fillText(name, textXOffset, pos.y+5);
 }
 
 function drawInput(node, inputNumber) {
   var pos = inputPosition(node, inputNumber);
+  var name = node.inputs[inputNumber].name; // TODO(lito): refactor
+
   drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
+
+  globalCtx.font = constFont;
+  var textXOffset = pos.x + 6;
+  globalCtx.fillText(name, textXOffset, pos.y+5);
 }
 
 function drawConnection(fromNode, outputNumber, connectedTo) {
@@ -118,6 +127,8 @@ function drawConnection(fromNode, outputNumber, connectedTo) {
   globalCtx.beginPath();
   globalCtx.moveTo(outputPos.x, outputPos.y);
 
+  // TODO(lito): This does not work at all well
+  // when nodes get closer together than 100px
   var bendDistance = 50;
 
   globalCtx.bezierCurveTo(
@@ -249,8 +260,8 @@ function main() {
 
   var node0 = {
     rect: {
+      x: 100,
       y: 75,
-      x: 75,
       w: 80,
       h: 50,
     },
@@ -260,8 +271,8 @@ function main() {
 
   var node1 = {
     rect: {
+      x: 500,
       y: 100,
-      x: 300,
       w: 80,
       h: 100,
     },
@@ -271,8 +282,8 @@ function main() {
 
   var node2 = {
     rect: {
+      x: 300,
       y: 200,
-      x: 200,
       w: 50,
       h: 50,
     },
