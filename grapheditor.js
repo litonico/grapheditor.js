@@ -1,7 +1,7 @@
 var globalDragged,
     globalDragOffset,
     globalMousePos,
-    globalNodes,
+    globalNodes, // TODO(lito): unglobal
     globalHeight,
     globalWidth,
     globalCtx;
@@ -12,6 +12,50 @@ function getMousePos(canvas, e) {
     x: Math.floor((e.clientX-rect.left)/(rect.right-rect.left)*canvas.width),
     y: Math.floor((e.clientY-rect.top)/(rect.bottom-rect.top)*canvas.height),
   };
+}
+
+function positiveMaximum(arr) {
+  var i;
+  var max = 0;
+  for (i = 0; i < arr.length; i++) {
+    if (arr[i] > max) {
+      max = arr[i];
+    }
+  }
+  return max;
+}
+
+function nodeWidth(node) {
+  var padding = 10;
+
+  var inputLengths = node.inputs.map(function(input) {
+    if (!input.name) {
+      return(0);
+    } else {
+      return(input.name.length);
+    }
+  });
+
+  var inputMaxLength = positiveMaximum(inputLengths);
+
+  var outputLengths = node.outputs.map(function(output) {
+    if (!output.name) {
+      return(0);
+    } else {
+      return(output.name.length);
+    }
+  });
+
+  var outputMaxLength = positiveMaximum(outputLengths);
+
+  var inputWidth = inputMaxLength * 7.4;
+  var outputWidth = outputMaxLength * 7.4;
+
+  return inputWidth + padding + outputWidth;
+}
+
+function updateNodeWidth(node) {
+  node.rect.w = nodeWidth(node);
 }
 
 function drawRect(r) {
@@ -48,12 +92,12 @@ function inputPosition(node, inputNumber) {
 
 function drawOutput(node, outputNumber) {
   var pos = outputPosition(node, outputNumber);
-  var name = node.outputs[outputNumber].name; // TODO(lito)
+  var name = node.outputs[outputNumber].name; // TODO(lito): refactor
 
   drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
 
-  globalCtx.font = "12px Monaco";
-  var letterWidth = 7.25;
+  globalCtx.font = "12px Menlo";
+  var letterWidth = 7.24; // TODO: find an exact value
   globalCtx.fillText(name, pos.x-letterWidth*(name.length+1), pos.y+5);
 }
 
@@ -74,11 +118,11 @@ function drawConnection(fromNode, outputNumber, connectedTo) {
   globalCtx.beginPath();
   globalCtx.moveTo(outputPos.x, outputPos.y);
 
-  var midpointX = outputPos.x + (inputPos.x - outputPos.x)/2.0;
+  var bendDistance = 50;
 
   globalCtx.bezierCurveTo(
-    midpointX, outputPos.y,
-    midpointX, inputPos.y,
+    outputPos.x + bendDistance, outputPos.y,
+    inputPos.x - bendDistance, inputPos.y,
     inputPos.x, inputPos.y // Bezier end: middle of the input
   );
 
@@ -110,11 +154,12 @@ function clear() {
 
 function update(nodes) {
   clear();
-  var i;
 
+  var i;
   for (i = 0; i < nodes.length; i++) {
-    var o = nodes[i];
-    drawNode(o);
+    var node = nodes[i];
+    updateNodeWidth(node);
+    drawNode(node);
   }
 
   // TODO(lito): remove
@@ -242,10 +287,10 @@ function main() {
 
   canvas.addEventListener("mousemove", function(e) {
     globalMousePos = getMousePos(canvas, e);
+    update(globalNodes);
     if (globalDragged !== undefined) {
       dragNode(globalDragged, globalDragOffset);
     }
-    update(globalNodes);
   }, false);
 
   canvas.addEventListener("mousedown", onMouseDown, false);
