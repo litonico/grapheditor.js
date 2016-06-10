@@ -298,14 +298,14 @@ function main() {
 
   canvas.addEventListener("mousemove", function(e) {
     globalMousePos = getMousePos(canvas, e);
-    update(globalNodes);
     if (globalDragged !== undefined) {
       dragNode(globalDragged, globalDragOffset);
     }
+    update(globalNodes);
   }, false);
 
-  canvas.addEventListener("mousedown", onMouseDown, false);
   canvas.addEventListener("mouseup", onMouseUp, false);
+  canvas.addEventListener("mousedown", onMouseDown, false);
 }
 
 main();
