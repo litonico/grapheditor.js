@@ -28,27 +28,23 @@ function positiveMaximum(arr) {
   return max;
 }
 
+function ioLengths(ioList) {
+  return ioList.map(function(io) {
+    if (!io.name) {
+      return(0);
+    } else {
+      return(io.name.length);
+    }
+  });
+}
+
 function nodeWidth(node) {
   var padding = 30;
 
-  var inputLengths = node.inputs.map(function(input) {
-    if (!input.name) {
-      return(0);
-    } else {
-      return(input.name.length);
-    }
-  });
-
+  var inputLengths = ioLengths(node.inputs);
   var inputMaxLength = positiveMaximum(inputLengths);
 
-  var outputLengths = node.outputs.map(function(output) {
-    if (!output.name) {
-      return(0);
-    } else {
-      return(output.name.length);
-    }
-  });
-
+  var outputLengths = ioLengths(node.outputs);
   var outputMaxLength = positiveMaximum(outputLengths);
 
   var inputWidth = inputMaxLength * constLetterWidth;
@@ -127,9 +123,15 @@ function drawConnection(fromNode, outputNumber, connectedTo) {
   globalCtx.beginPath();
   globalCtx.moveTo(outputPos.x, outputPos.y);
 
-  // TODO(lito): This does not work at all well
-  // when nodes get closer together than 100px
   var bendDistance = 50;
+
+  // When nodes are close to being y-aligned, reduce bend distance
+  // TODO(lito): I find this unsettling for some reason
+  var yDifference = Math.abs(outputPos.y - inputPos.y);
+
+  if (yDifference < bendDistance) {
+    bendDistance = yDifference;
+  }
 
   globalCtx.bezierCurveTo(
     outputPos.x + bendDistance, outputPos.y,
