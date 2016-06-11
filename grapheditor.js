@@ -1,13 +1,13 @@
 var globalDragged,
     globalDragOffset,
     globalMousePos,
-    globalNodes, // TODO(lito): unglobal
+    globalNodes,
     globalHeight,
     globalWidth,
     globalCtx;
 
 var constFont = "12px Menlo";
-var constLetterWidth = 7.24; // TODO: find an exact value
+var constLetterWidth = 7.24;
 
 function getMousePos(canvas, e) {
   var rect = canvas.getBoundingClientRect();
@@ -91,7 +91,7 @@ function inputPosition(node, inputNumber) {
 
 function drawOutput(node, outputNumber) {
   var pos = outputPosition(node, outputNumber);
-  var name = node.outputs[outputNumber].name; // TODO(lito): refactor
+  var name = node.outputs[outputNumber].name;
 
   drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
 
@@ -102,7 +102,7 @@ function drawOutput(node, outputNumber) {
 
 function drawInput(node, inputNumber) {
   var pos = inputPosition(node, inputNumber);
-  var name = node.inputs[inputNumber].name; // TODO(lito): refactor
+  var name = node.inputs[inputNumber].name;
 
   drawRect({ x: pos.x, y: pos.y, w: 10, h: 10 });
 
@@ -114,6 +114,8 @@ function drawInput(node, inputNumber) {
 function drawConnection(fromNode, outputNumber, connectedTo) {
   // Connects an output to an input
   var outNode = fromNode;
+
+  // NOTE(lito):I don't like using the global nodes here...
   var inNode = globalNodes[connectedTo.nodeIndex];
 
   var outputPos = outputPosition(outNode, outputNumber);
@@ -166,16 +168,20 @@ function clear() {
 }
 
 function update(nodes) {
+  var i;
+  var node;
   clear();
 
-  var i;
   for (i = 0; i < nodes.length; i++) {
-    var node = nodes[i];
+    node = nodes[i];
     updateNodeWidth(node);
+  }
+
+  for (i = 0; i < nodes.length; i++) {
+    node = nodes[i];
     drawNode(node);
   }
 
-  // TODO(lito): remove
   globalCtx.font = "12px Arial";
   globalCtx.fillText("Try dragging the boxes!", 135, 300);
 }
@@ -293,10 +299,12 @@ function main() {
     outputs: [output2],
   };
 
-  // This should NOT be global, but... lazy
   globalNodes = [node0, node1, node2];
 
   globalDragged = undefined;
+
+  globalMousePos = { x: 0, y: 0 };
+  update(globalNodes);
 
   canvas.addEventListener("mousemove", function(e) {
     globalMousePos = getMousePos(canvas, e);
